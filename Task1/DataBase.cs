@@ -6,27 +6,7 @@ namespace Task1
     public class Database
     {
         private const string ConnectionString = "Data Source=DataBase.db;Version=3;";
-
-        public static void CreateDatabase()
-        {
-            using (var connection = new SQLiteConnection(ConnectionString))
-            {
-                connection.Open();
-
-                string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS Humans (
-                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        Firstname TEXT,
-                        Lastname TEXT
-                    )";
-
-                using (var command = new SQLiteCommand(createTableQuery, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
+        
         public static void InsertHuman(Human human)
         {
             using (var connection = new SQLiteConnection(ConnectionString))
@@ -45,8 +25,9 @@ namespace Task1
             }
         }
 
-        public static void DisplayHumans()
+        public static List<Human> GetHumans()
         {
+            List<Human> humans = new List<Human>();
             using (var connection = new SQLiteConnection(ConnectionString))
             {
                 connection.Open();
@@ -59,9 +40,23 @@ namespace Task1
                     {
                         while (reader.Read())
                         {
-                            Console.WriteLine($"Id: {reader["Id"]}, Firstname: {reader["Firstname"]}, Lastname: {reader["Lastname"]}");
+                            humans.Add(new Human{Id = reader.GetInt32(0), Firstname = reader.GetString(1), Lastname = reader.GetString(2)});
                         }
                     }
+                }
+            }
+            return humans;
+        }
+        public static void DeleteHuman(int id)
+        {
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                connection.Open();
+                string deleteQuery = "DELETE FROM Humans WHERE Id = @Id";
+                using (SQLiteCommand command = new SQLiteCommand(deleteQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+                    command.ExecuteNonQuery();
                 }
             }
         }

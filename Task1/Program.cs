@@ -1,8 +1,10 @@
 ﻿using Task1;
 
-Database.CreateDatabase();
-
 Database.InsertHuman(new Human { Firstname = "John", Lastname = "Doe" });
 Database.InsertHuman(new Human { Firstname = "Jane", Lastname = "Doe" });
-
-Database.DisplayHumans();
+Database.DeleteHuman(2);
+var humans = Database.GetHumans();
+foreach (var human in humans)
+{
+    Console.WriteLine($"id: {human.Id}, firstname: {human.Firstname}, lastname: {human.Lastname}");
+}
